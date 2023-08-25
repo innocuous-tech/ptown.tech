@@ -17,8 +17,6 @@ import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
 import { Footer } from '@/components/Footer'
 import { GridPattern } from '@/components/GridPattern'
-import { Logo, Logomark } from '@/components/Logo'
-import { Offices } from '@/components/Offices'
 import { SocialMedia } from '@/components/SocialMedia'
 
 const RootLayoutContext = createContext<{
@@ -58,6 +56,7 @@ function Header({
   toggleRef: React.RefObject<HTMLButtonElement>
   invert?: boolean
 }) {
+  // Unused
   let { logoHovered, setLogoHovered } = useContext(RootLayoutContext)!
 
   return (
@@ -66,19 +65,24 @@ function Header({
         <Link
           href="/"
           aria-label="Home"
+          className={clsx(
+            'translate-y-0 scale-100 rounded-sm px-2 outline-2 transition-all duration-200 ease-in-out active:translate-y-1 active:scale-95 [&:not(:active)]:hover:-translate-y-2 [&:not(:active)]:hover:scale-110',
+            {
+              'outline-black': !invert,
+              'outline-white': invert,
+            },
+          )}
           onMouseEnter={() => setLogoHovered(true)}
           onMouseLeave={() => setLogoHovered(false)}
         >
-          <Logomark
-            className="h-8 sm:hidden"
-            invert={invert}
-            filled={logoHovered}
-          />
-          <Logo
-            className="hidden h-8 sm:block"
-            invert={invert}
-            filled={logoHovered}
-          />
+          <span
+            className={clsx('text-xl font-bold', {
+              'text-white': invert,
+              'text-black': !invert,
+            })}
+          >
+            Prophet Town
+          </span>
         </Link>
         <div className="flex items-center gap-x-8">
           <Button href="/contact" invert={invert}>
@@ -113,9 +117,10 @@ function Header({
 
 function NavigationRow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="even:mt-px sm:bg-neutral-950">
+    // use `even:mt-px` on each div if you want to have multiple links per row
+    <div className="focus-within:bg-neutral-800 hover:bg-neutral-800 sm:bg-neutral-950 [&:focus-within_a]:bg-neutral-800 [&:hover_a]:bg-neutral-800">
       <Container>
-        <div className="grid grid-cols-1 sm:grid-cols-2">{children}</div>
+        <div className="grid grid-cols-1">{children}</div>
       </Container>
     </div>
   )
@@ -131,10 +136,10 @@ function NavigationItem({
   return (
     <Link
       href={href}
-      className="group relative isolate -mx-6 bg-neutral-950 px-6 py-10 even:mt-px sm:mx-0 sm:px-0 sm:py-16 sm:odd:pr-16 sm:even:mt-0 sm:even:border-l sm:even:border-neutral-800 sm:even:pl-16"
+      className="group relative isolate -mx-6 bg-neutral-950 px-6 py-10 underline-offset-4 outline-none even:mt-px focus-visible:underline sm:mx-0 sm:px-0 sm:py-16 sm:odd:pr-16 sm:even:mt-0 sm:even:border-l sm:even:border-neutral-800 sm:even:pl-16"
     >
       {children}
-      <span className="absolute inset-y-0 -z-10 w-screen bg-neutral-900 opacity-0 transition group-odd:right-0 group-even:left-0 group-hover:opacity-100" />
+      <span className="absolute inset-y-0 -z-10 w-screen bg-neutral-900 opacity-0 transition group-odd:right-0 group-even:left-0" />
     </Link>
   )
 }
@@ -144,12 +149,25 @@ function Navigation() {
     <nav className="mt-px font-display text-5xl font-medium tracking-tight text-white">
       <NavigationRow>
         <NavigationItem href="/work">Our Work</NavigationItem>
+      </NavigationRow>
+
+      <NavigationRow>
+        <NavigationItem href="/about">About Us</NavigationItem>
+      </NavigationRow>
+
+      <NavigationRow>
+        <NavigationItem href="/process">Our Process</NavigationItem>
+      </NavigationRow>
+
+      {/* What it looked like on init: */}
+      {/* <NavigationRow>
+        <NavigationItem href="/work">Our Work</NavigationItem>
         <NavigationItem href="/about">About Us</NavigationItem>
       </NavigationRow>
       <NavigationRow>
         <NavigationItem href="/process">Our Process</NavigationItem>
         <NavigationItem href="/blog">Blog</NavigationItem>
-      </NavigationRow>
+      </NavigationRow> */}
     </nav>
   )
 }
@@ -227,19 +245,12 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
                 }}
               />
             </div>
+
             <Navigation />
+
             <div className="relative bg-neutral-950 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-neutral-800">
               <Container>
                 <div className="grid grid-cols-1 gap-y-10 pb-16 pt-10 sm:grid-cols-2 sm:pt-16">
-                  <div>
-                    <h2 className="font-display text-base font-semibold text-white">
-                      Our offices
-                    </h2>
-                    <Offices
-                      invert
-                      className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2"
-                    />
-                  </div>
                   <div className="sm:border-l sm:border-transparent sm:pl-16">
                     <h2 className="font-display text-base font-semibold text-white">
                       Follow us
