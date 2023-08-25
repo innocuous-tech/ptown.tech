@@ -66,7 +66,7 @@ function Header({
           href="/"
           aria-label="Home"
           className={clsx(
-            'translate-y-0 scale-100 rounded-sm px-2 outline-2 transition-all duration-200 ease-in-out active:translate-y-1 active:scale-95 [&:not(:active)]:hover:-translate-y-2 [&:not(:active)]:hover:scale-110',
+            'scale-100 rounded-sm px-2 outline-2 transition-all duration-200 ease-in-out active:scale-95 motion-reduce:hover:!scale-100 [&:not(:active)]:hover:scale-105',
             {
               'outline-black': !invert,
               'outline-white': invert,
