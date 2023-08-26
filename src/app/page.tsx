@@ -172,10 +172,12 @@ function Services() {
   )
 }
 
+
 const description =
   'Prophet Town is at the frontier of software development, and together we can build any product you can imagine.'
 
 export const metadata: Metadata = {
+  title: 'Prophet Town',
   description,
 }
 
