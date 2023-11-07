@@ -42,6 +42,7 @@ function MenuIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
 }
 
 function Header({
+  isBlank = false,
   panelId,
   icon: Icon,
   expanded,
@@ -49,6 +50,7 @@ function Header({
   toggleRef,
   invert = false,
 }: {
+  isBlank?: boolean
   panelId: string
   icon: React.ComponentType<{ className?: string }>
   expanded: boolean
@@ -56,25 +58,10 @@ function Header({
   toggleRef: React.RefObject<HTMLButtonElement>
   invert?: boolean
 }) {
-  // Unused
-  let { logoHovered, setLogoHovered } = useContext(RootLayoutContext)!
-
   return (
     <Container>
       <div className="flex items-center justify-between">
-        <Link
-          href="/"
-          aria-label="Home"
-          className={clsx(
-            'scale-100 rounded-sm px-2 outline-2 transition-all duration-200 ease-in-out active:scale-95 motion-reduce:hover:!scale-100 [&:not(:active)]:hover:scale-105',
-            {
-              'outline-black': !invert,
-              'outline-white': invert,
-            },
-          )}
-          onMouseEnter={() => setLogoHovered(true)}
-          onMouseLeave={() => setLogoHovered(false)}
-        >
+        {isBlank ? (
           <span
             className={clsx('text-xl font-bold', {
               'text-white': invert,
@@ -83,33 +70,57 @@ function Header({
           >
             Prophet Town
           </span>
-        </Link>
-        <div className="flex items-center gap-x-8">
-          <Button href="/contact" invert={invert}>
-            Contact us
-          </Button>
-          <button
-            ref={toggleRef}
-            type="button"
-            onClick={onToggle}
-            aria-expanded={expanded ? 'true' : 'false'}
-            aria-controls={panelId}
+        ) : (
+          <Link
+            href="/"
+            aria-label="Home"
             className={clsx(
-              'group -m-2.5 rounded-full p-2.5 transition',
-              invert ? 'hover:bg-white/10' : 'hover:bg-neutral-950/10',
+              'scale-100 rounded-sm px-2 outline-2 transition-all duration-200 ease-in-out active:scale-95 motion-reduce:hover:!scale-100 [&:not(:active)]:hover:scale-105',
+              {
+                'outline-black': !invert,
+                'outline-white': invert,
+              },
             )}
-            aria-label="Toggle navigation"
           >
-            <Icon
+            <span
+              className={clsx('text-xl font-bold', {
+                'text-white': invert,
+                'text-black': !invert,
+              })}
+            >
+              Prophet Town
+            </span>
+          </Link>
+        )}
+
+        {!isBlank && (
+          <div className="flex items-center gap-x-8">
+            <Button href="/contact" invert={invert}>
+              Contact us
+            </Button>
+            <button
+              ref={toggleRef}
+              type="button"
+              onClick={onToggle}
+              aria-expanded={expanded ? 'true' : 'false'}
+              aria-controls={panelId}
               className={clsx(
-                'h-6 w-6',
-                invert
-                  ? 'fill-white group-hover:fill-neutral-200'
-                  : 'fill-neutral-950 group-hover:fill-neutral-700',
+                'group -m-2.5 rounded-full p-2.5 transition',
+                invert ? 'hover:bg-white/10' : 'hover:bg-neutral-950/10',
               )}
-            />
-          </button>
-        </div>
+              aria-label="Toggle navigation"
+            >
+              <Icon
+                className={clsx(
+                  'h-6 w-6',
+                  invert
+                    ? 'fill-white group-hover:fill-neutral-200'
+                    : 'fill-neutral-950 group-hover:fill-neutral-700',
+                )}
+              />
+            </button>
+          </div>
+        )}
       </div>
     </Container>
   )
@@ -172,7 +183,13 @@ function Navigation() {
   )
 }
 
-function RootLayoutInner({ children }: { children: React.ReactNode }) {
+function RootLayoutInner({
+  children,
+  isBlank = false,
+}: {
+  children: React.ReactNode
+  isBlank?: boolean
+}) {
   let panelId = useId()
   let [expanded, setExpanded] = useState(false)
   let openRef = useRef<React.ElementRef<'button'>>(null)
@@ -207,6 +224,7 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
           inert={expanded ? '' : undefined}
         >
           <Header
+            isBlank={isBlank}
             panelId={panelId}
             icon={MenuIcon}
             toggleRef={openRef}
@@ -220,48 +238,50 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
           />
         </div>
 
-        <motion.div
-          layout
-          id={panelId}
-          style={{ height: expanded ? 'auto' : '0.5rem' }}
-          className="relative z-50 overflow-hidden bg-neutral-950 pt-2"
-          aria-hidden={expanded ? undefined : 'true'}
-          // @ts-ignore (https://github.com/facebook/react/issues/17157)
-          inert={expanded ? undefined : ''}
-        >
-          <motion.div layout className="bg-neutral-800">
-            <div ref={navRef} className="bg-neutral-950 pb-16 pt-14">
-              <Header
-                invert
-                panelId={panelId}
-                icon={XIcon}
-                toggleRef={closeRef}
-                expanded={expanded}
-                onToggle={() => {
-                  setExpanded((expanded) => !expanded)
-                  window.setTimeout(
-                    () => openRef.current?.focus({ preventScroll: true }),
-                  )
-                }}
-              />
-            </div>
+        {!isBlank && (
+          <motion.div
+            layout
+            id={panelId}
+            style={{ height: expanded ? 'auto' : '0.5rem' }}
+            className="relative z-50 overflow-hidden bg-neutral-950 pt-2"
+            aria-hidden={expanded ? undefined : 'true'}
+            // @ts-ignore (https://github.com/facebook/react/issues/17157)
+            inert={expanded ? undefined : ''}
+          >
+            <motion.div layout className="bg-neutral-800">
+              <div ref={navRef} className="bg-neutral-950 pb-16 pt-14">
+                <Header
+                  invert
+                  panelId={panelId}
+                  icon={XIcon}
+                  toggleRef={closeRef}
+                  expanded={expanded}
+                  onToggle={() => {
+                    setExpanded((expanded) => !expanded)
+                    window.setTimeout(
+                      () => openRef.current?.focus({ preventScroll: true }),
+                    )
+                  }}
+                />
+              </div>
 
-            <Navigation />
+              <Navigation />
 
-            <div className="relative bg-neutral-950 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-neutral-800">
-              <Container>
-                <div className="grid grid-cols-1 gap-y-10 pb-16 pt-10 sm:grid-cols-2 sm:pt-16">
-                  <div className="sm:border-l sm:border-transparent sm:pl-16">
-                    <h2 className="font-display text-base font-semibold text-white">
-                      Follow us
-                    </h2>
-                    <SocialMedia className="mt-6" invert />
+              <div className="relative bg-neutral-950 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-neutral-800">
+                <Container>
+                  <div className="grid grid-cols-1 gap-y-10 pb-16 pt-10 sm:grid-cols-2 sm:pt-16">
+                    <div className="sm:border-l sm:border-transparent sm:pl-16">
+                      <h2 className="font-display text-base font-semibold text-white">
+                        Follow us
+                      </h2>
+                      <SocialMedia className="mt-6" invert />
+                    </div>
                   </div>
-                </div>
-              </Container>
-            </div>
+                </Container>
+              </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
+        )}
       </header>
 
       <motion.div
@@ -274,27 +294,41 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
           className="relative isolate flex w-full flex-col pt-9"
         >
           <GridPattern
-            className="absolute inset-x-0 -top-14 -z-10 h-[1000px] w-full fill-neutral-50 stroke-neutral-950/5 [mask-image:linear-gradient(to_bottom_left,white_40%,transparent_50%)]"
+            className={clsx(
+              'absolute inset-x-0 -top-14 -z-10 w-full fill-neutral-50 stroke-neutral-950/5 [mask-image:linear-gradient(to_bottom_left,white_40%,transparent_50%)]',
+              {
+                'h-[1000px]': !isBlank,
+                'h-[2000px]': isBlank,
+              },
+            )}
             yOffset={-96}
             interactive
           />
 
           <main className="w-full flex-auto">{children}</main>
 
-          <Footer />
+          {/* <Footer /> */}
         </motion.div>
       </motion.div>
     </MotionConfig>
   )
 }
 
-export function RootLayout({ children }: { children: React.ReactNode }) {
+export function RootLayout({
+  children,
+  isBlank = false,
+}: {
+  children: React.ReactNode
+  isBlank?: boolean
+}) {
   let pathname = usePathname()
   let [logoHovered, setLogoHovered] = useState(false)
 
   return (
     <RootLayoutContext.Provider value={{ logoHovered, setLogoHovered }}>
-      <RootLayoutInner key={pathname}>{children}</RootLayoutInner>
+      <RootLayoutInner key={pathname} isBlank={isBlank}>
+        {children}
+      </RootLayoutInner>
     </RootLayoutContext.Provider>
   )
 }
